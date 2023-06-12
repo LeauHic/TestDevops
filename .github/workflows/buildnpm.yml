@@ -70,7 +70,7 @@ jobs:
     steps:
       - name: prepare
         run : |
-          echo ${{ secrets.SSH_KEY }} > ~/.ssh/rsaKey.pem
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/rsaKey.pem
           sudo apt-get install -y openssh-client
           cat ~/.ssh/rsaKey.pem
           chmod 0600  ~/.ssh/rsaKey.pem
