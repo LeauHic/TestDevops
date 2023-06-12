@@ -1,4 +1,4 @@
-name: check build integrity
+name: Intall, build and test
 run-name: ${{ github.actor }} trying to check build integrity
 on: [push]
 jobs:
@@ -16,7 +16,7 @@ jobs:
         run : npm install
 
       - name : Build
-        run : npm build
+        run : npm run build
 
       - name: Test e2e
         run : npm run e2e:headless
