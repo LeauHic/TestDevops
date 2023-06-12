@@ -7,12 +7,18 @@ jobs:
     steps:
       - name : Checkout
         uses: actions/checkout@v3
-      - uses: actions/cache@v3
+      
+      - name : Node module caching
+        uses: actions/cache@v3
+        id: npm-cache # use this to check for `cache-hit` ==> if: steps.npm-cache.outputs.cache-hit != 'true'
         with:
-          path: ~/.npm
-          key: npmModules
+          path: ${{ steps.npm-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
       
       - name : Installation des dépendances
+        if: steps.cache.outputs.cache-hit != 'true'
         run : npm install
 
       - name : Build
@@ -24,11 +30,15 @@ jobs:
     needs: [build]
     steps:
 
-      - uses: actions/cache@v3
+      - name : Node module caching
+        uses: actions/cache@v3
+        id: npm-cache
         with:
-          path: ~/.npm
-          key: npmModules
-          
+          path: ${{ steps.npm-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
       - name: Test e2e
         run : npm run e2e:headless
 
