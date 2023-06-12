@@ -7,6 +7,10 @@ jobs:
     steps:
       - name : Checkout
         uses: actions/checkout@v3
+      - name: Get npm cache directory
+        id: npm-cache-dir
+        shell: bash
+        run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
       
       - name : Node module caching
         uses: actions/cache@v3
