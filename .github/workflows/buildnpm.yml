@@ -78,6 +78,8 @@ jobs:
 
       - name: connect, clone and launch
         run : |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVEUR_IP }} 'if [ -d "~/devops/" ]; then rm -Rf ~/devops/; fi'
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVEUR_IP }} "git clone git@github.com:LeauHic/TestDevops.git devops"
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVEUR_IP }} "cd devops"
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVEUR_IP }} "npm run build"
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVEUR_IP }} "pm2 reload all"
