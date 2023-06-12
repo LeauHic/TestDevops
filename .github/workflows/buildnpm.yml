@@ -72,12 +72,12 @@ jobs:
         uses: actions/checkout@v3
       - name: connect, clone and launch
         run : |
-          echo ${{ secrets.SSH_KEY }} > ./rsaKey.pem
+          echo ${{ secrets.SSH_KEY }} > ~/.ssh/rsaKey.pem
           sudo apt-get install -y openssh-client
-          cat rsaKey.pem
+          cat ~/.ssh/rsaKey.pem
           chmod 0600 ./rsaKey.pem
-          ssh -o StrictHostKeyChecking=no -i ./rsaKey.pem ubuntu@${{ secrets.SERVEUR_IP }} "'if [ -d "~/devops/" ]; then rm -Rf ~/devops/; fi'"
-          ssh -o StrictHostKeyChecking=no -i ./rsaKey.pem ubuntu@${{ secrets.SERVEUR_IP }} "git clone git@github.com:LeauHic/TestDevops.git devops"
-          ssh -o StrictHostKeyChecking=no -i ./rsaKey.pem ubuntu@${{ secrets.SERVEUR_IP }} "cd devops"
-          ssh -o StrictHostKeyChecking=no -i ./rsaKey.pem ubuntu@${{ secrets.SERVEUR_IP }} "npm run build"
-          ssh -o StrictHostKeyChecking=no -i ./rsaKey.pem ubuntu@${{ secrets.SERVEUR_IP }} "npm run start &"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/rsaKey.pem ubuntu@${{ secrets.SERVEUR_IP }} "'if [ -d "~/devops/" ]; then rm -Rf ~/devops/; fi'"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/rsaKey.pem ubuntu@${{ secrets.SERVEUR_IP }} "git clone git@github.com:LeauHic/TestDevops.git devops"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/rsaKey.pem ubuntu@${{ secrets.SERVEUR_IP }} "cd devops"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/rsaKey.pem ubuntu@${{ secrets.SERVEUR_IP }} "npm run build"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/rsaKey.pem ubuntu@${{ secrets.SERVEUR_IP }} "npm run start &"
