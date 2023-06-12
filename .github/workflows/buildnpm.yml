@@ -78,4 +78,10 @@ jobs:
 
       - name: connect, clone and launch
         run : |
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVEUR_IP }} 'bash -i -c "git clone git@github.com:LeauHic/TestDevops.git devops && cd devops && npm install && npm run build && pm2 delete all && pm2 start "npm run start""'
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVEUR_IP }} 'bash -i -c "\
+          cd devops && \
+          git pull && \
+          npm install && \
+          npm run build && \
+          pm2 delete all && \
+          pm2 start "npm run start"'
