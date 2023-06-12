@@ -1,5 +1,5 @@
 name: Intall, build and test
-run-name: ${{ github.actor }} trying to check build integrity
+run-name: ${{ github.actor }} Intall, build and test
 on: [push]
 jobs:
   build:
@@ -7,31 +7,37 @@ jobs:
     steps:
       - name : Checkout
         uses: actions/checkout@v3
-      - name : Config node
-        uses: actions/setup-node@v3
+      - name: Cache npm
+        uses: actions/cache/save@v3
+        id: npm-cache
         with:
-          node-version: 18
-          cache: 'npm'
+          path: ${{ steps.npm-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+      
       - name : Installation des dépendances
         run : npm install
 
       - name : Build
         run : npm run build
+  
+
   test:
     runs-on: ubuntu-latest
     needs: [build]
     steps:
-      - name : Config node
-        uses: actions/setup-node@v3
+
+      - uses: actions/cache/restore@v3
+        id: npm-cache
         with:
-          node-version: 18
-          cache: 'npm'
-      
+          path: ${{ steps.npm-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
       - name: Test e2e
         run : npm run e2e:headless
 
       - name: Archive test video
         uses: actions/upload-artifact@v3
+        if: always()
         with:
           name: Video e2e
           path: |
