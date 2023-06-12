@@ -2,9 +2,28 @@ name: check build integrity
 run-name: ${{ github.actor }} trying to check build integrity
 on: [push]
 jobs:
-  check-bats-version:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - run: npm install
-      - run: npm run build
+      - name : Checkout
+        uses: actions/checkout@v3
+      - name : Config node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+      - name : Installation des dépendances
+        run : npm install
+
+      - name : Build
+        run : npm build
+
+      - name: Test e2e
+        run : npm run e2e:headless
+
+      - name: Archive test video
+        uses: actions/upload-artifact@v3
+        with:
+          name: Video e2e
+          path: |
+            cypress/videos/*.mp4
