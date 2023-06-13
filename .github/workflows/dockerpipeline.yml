@@ -13,8 +13,8 @@ jobs:
 
       - name: Build and push
         run : |
-            docker build -t nexttest:${{ github.run_number }} .
-            docker push https://ghcr.io/docker/nexttest:${{ github.run_number }}
+            docker build -t ghcr.io/docker/nexttest:${{ github.run_number }} .
+            docker push ghcr.io/docker/nexttest:${{ github.run_number }}
 
   deploy:
     runs-on: ubuntu-latest
