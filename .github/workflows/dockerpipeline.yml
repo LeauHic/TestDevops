@@ -7,14 +7,14 @@ jobs:
     steps:
       - name : Checkout
         uses: actions/checkout@v3
-        
+
       - name: Login to GitHub registry
         run : docker login https://ghcr.io -u${{ github.actor }} -p${{ secrets.GIT_TOKEN }}
 
       - name: Build and push
         run : |
             docker build -t nexttest:${{ github.run_number }} .
-            docker push nexttest:${{ github.run_number }}
+            docker push https://ghcr.io/docker/nexttest:${{ github.run_number }}
 
   deploy:
     runs-on: ubuntu-latest
