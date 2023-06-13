@@ -7,42 +7,33 @@ jobs:
     steps:
       - name : Checkout
         uses: actions/checkout@v3
-      
-      - name: Setup JFrog CLI
-        uses: jfrog/setup-jfrog-cli@v3
-        env:
-          JF_URL: ${{ secrets.JF_URL }}
-          JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
 
-      - name: Build Tag and push Docker Image
-        env:
-          IMAGE_NAME: loickcesiregistry.jfrog.io/docker/nexttest:${{ github.run_number }}
-        run: |
-            jf docker build -t $IMAGE_NAME .
-            jf docker push $IMAGE_NAME
-            
-            - name : Node module caching
-            uses: actions/cache@v3
-            id: npm-cache # use this to check for `cache-hit` ==> if: steps.npm-cache.outputs.cache-hit != 'true'
-            with:
-            path: | 
-                ./node_modules
-                /home/runner/.cache/Cypress
-            key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-            restore-keys: |
-                ${{ runner.os }}-node-
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1 
 
-      - name: Publish Build info With JFrog CLI
+      - name: Cache register
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ hashFiles('**/Dockerfile') }}
+
+      - name: Build Docker image
         env:
-            # Generated and maintained by GitHub
-            JFROG_CLI_BUILD_NAME: jfrog-docker-build-example
-            # JFrog organization secret
-            JFROG_CLI_BUILD_NUMBER : ${{ github.run_number }}
+          IMAGE_NAME: ${{ secrets.JF_URL }}/docker/nexttest:${{ github.run_number }}
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: ./Dockerfile
+          builder: ${{ steps.buildx.outputs.name }}
+          load: true
+          tags: $IMAGE_NAME
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+
+      - name: Publish Build
+        env:
+          IMAGE_NAME: ${{ secrets.JF_URL }}/docker/nexttest:${{ github.run_number }}
         run: |
-            # Export the build name and build nuber
-            # Collect environment variables for the build
-            jf rt build-collect-env
-            # Collect VCS details from git and add them to the build
-            jf rt build-add-git
-            # Publish build info
-            jf rt build-publish
+            docker login -u${{ secrets.JF_LOGIN }} _p${{ secrets.JF_ACCESS_TOKEN }} ${{ secrets.JF_URL }}
+            docker push $IMAGE_NAME
