@@ -30,4 +30,4 @@ jobs:
 
       - name: connect, clone and launch
         run : |
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVEUR_IP }} 'bash -i -c "sudo docker login ${{ secrets.GIT_URL }} -u ${{ github.actor }} -p${{ secrets.GIT_TOKEN }} && sudo docker stop test_cypress && sudo docker rm test_cypress && sudo docker run -d --name "test_cypress" -p 1234:3000 nexttest:${{ github.run_number }}"'
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVEUR_IP }} 'bash -i -c "sudo docker login ${{ secrets.GIT_URL }} -u ${{ github.actor }} -p${{ secrets.GIT_TOKEN }} && sudo docker stop test_cypress && sudo docker rm test_cypress && sudo docker run -d --name "test_cypress" -p 1234:3000 ghcr.io/docker/nexttest:${{ github.run_number }}"'
