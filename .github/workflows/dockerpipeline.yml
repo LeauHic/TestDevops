@@ -26,9 +26,16 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           load: true
           tags: nexttest:${{ github.run_number }}
+          outputs: type=oci,dest=/tmp/image.tar
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
+      - name: Upload image artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: app
+          path: /tmp/image.tar
+          
       - name: Publish Build to JFrog
         run: |
             docker login ${{ secrets.JF_URL }} -u${{ secrets.JF_LOGIN }} -p${{ secrets.JF_ACCESS_TOKEN }}
