@@ -34,11 +34,11 @@ jobs:
      - name: Download artifact
        uses: actions/download-artifact@v2
        with:
-        name: myimage
+        name: nexttest
         path: /tmp
      - name: Load Docker image
        run: |
-          docker load --input /tmp/myimage.tar
+          docker load --input /tmp/nexttest.tar
           docker image ls -a
      - name: Publish Build to JFrog
        run: |
@@ -54,11 +54,11 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v2
         with:
-         name: myimage
+         name: nexttest
          path: /tmp
       - name: Load Docker image
         run: |
-          docker load --input /tmp/myimage.tar
+          docker load --input /tmp/nexttest.tar
           docker image ls -a
       - name: Publish Build to Github
         run: |
