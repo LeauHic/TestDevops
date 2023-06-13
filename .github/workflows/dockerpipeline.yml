@@ -1,7 +1,6 @@
 name: Build and push docker image
 run-name: ${{ github.actor }} docker
-on: [push]
-
+on: push
 jobs:
   build-and-tag:
     runs-on: ubuntu-latest
