@@ -4,7 +4,6 @@ FROM node:16-alpine
 RUN apk update && apk add --no-cache build-base gcc autoconf automake zlib-dev libpng-dev nasm bash 
 
 # Suppression pour essai compat gitlab vips-dev
-ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
 
 WORKDIR /opt/app
@@ -18,6 +17,8 @@ RUN npm install
 
 RUN npm run build
 
-EXPOSE 3000
+COPY docker/next/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
 
+EXPOSE 3000
+ENTRYPOINT [ "docker-entrypoint" ]
 CMD ["npm", "run", "start"]
