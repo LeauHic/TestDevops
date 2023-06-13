@@ -12,55 +12,31 @@ jobs:
         id: buildx
         uses: docker/setup-buildx-action@v1 
 
+      - name: Login to GitHub registry
+        uses: docker/login-action@v2
+        with:
+          registry : ${{ secrets.GIT_URL }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build Docker image
         uses: docker/build-push-action@v2
         with:
-          context: ./
-          file: ./Dockerfile
+          push: true
           tags: nexttest:${{ github.run_number }}
-          outputs: type=docker,dest=/tmp/nexttest.tar
 
-      - name: Upload image artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: app
-          path: /tmp/nexttest.tar
-  deploy_on_jfrog:
+  deploy:
     runs-on: ubuntu-latest
-    needs: build-and-tag
-    steps:          
-     - name: Set up Docker Buildx
-       uses: docker/setup-buildx-action@v1
-     - name: Download artifact
-       uses: actions/download-artifact@v2
-       with:
-        name: nexttest
-        path: /tmp
-     - name: Load Docker image
-       run: |
-          docker load --input /tmp/nexttest.tar
-          docker image ls -a
-     - name: Publish Build to JFrog
-       run: |
-            docker login ${{ secrets.JF_URL }} -u${{ secrets.JF_LOGIN }} -p${{ secrets.JF_ACCESS_TOKEN }}
-            docker push nexttest:${{ github.run_number }}
+    #needs: [build, test]
+    steps:
+      - name: prepare client
+        run : sudo apt-get install -y openssh-client
 
-  deploy_on_github:
-    runs-on: ubuntu-latest
-    needs: build-and-tag
-    steps:          
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      - name: Download artifact
-        uses: actions/download-artifact@v2
+      - name: prepare key
+        uses: webfactory/ssh-agent@v0.7.0
         with:
-         name: nexttest
-         path: /tmp
-      - name: Load Docker image
-        run: |
-          docker load --input /tmp/nexttest.tar
-          docker image ls -a
-      - name: Publish Build to Github
-        run: |
-            docker login ${{ secrets.GIT_URL }} -u${{ secrets.GIT_LOGIN }} -p${{ secrets.GIT_TOKEN }} 
-            docker push nexttest:${{ github.run_number }}
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+
+      - name: connect, clone and launch
+        run : |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVEUR_IP }} 'bash -i -c "docker login ${{ secrets.GIT_URL }} -u ${{ github.actor }} -p${{ secrets.GIT_TOKEN }} && docker stop test_cypress && docker rm test_cypress && docker run -d --name "test_cypress" -p 1234:3000 nexttest:${{ github.run_number }}"'
