@@ -63,4 +63,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: https://ghcr.io/nexttest:latest
+          tags: ghcr.io/nexttest:latest
