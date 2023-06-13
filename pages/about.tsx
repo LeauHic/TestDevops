@@ -7,7 +7,7 @@ export default function About() {
       <main className={styles.main}>
         <h1>About Page</h1>
         <p className={styles.description}>
-          <Link href="/">&larr; Go Back</Link>
+          <Link href="/">&larr; Go Arriere</Link>
         </p>
       </main>
     </div>
