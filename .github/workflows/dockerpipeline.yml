@@ -69,4 +69,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/$OWNER/nexttest:latest
+          tags: ghcr.io/${{env.OWNER}}/nexttest:latest
