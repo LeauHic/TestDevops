@@ -63,4 +63,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/${{ github.actor }}/nexttest:latest
+          tags: ghcr.io/docker/nexttest:latest
