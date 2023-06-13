@@ -1,41 +1,3 @@
-# name: Build and push docker image
-# run-name: ${{ github.actor }} docker
-# on: push
-# jobs:
-#   build-and-tag:
-#     runs-on: ubuntu-latest
-#     permissions:
-#         contents: read
-#         packages: write
-#     steps:
-#       - name : Checkout
-#         uses: actions/checkout@v3
-
-#       - name: Login to GitHub registry
-#         run : docker login https://ghcr.io -u${{ github.actor }} -p${{ secrets.GIT_TOKEN }}
-
-#       - name: Build and push
-#         run : |
-#             docker build -t nexttest:${{ github.run_number }} .
-#             docker tag nexttest:${{ github.run_number }} ghcr.io/docker/nexttest:${{ github.run_number }}
-#             docker push ghcr.io/docker/nexttest:${{ github.run_number }}
-
-#   deploy:
-#     runs-on: ubuntu-latest
-#     needs: [build-and-tag]
-#     steps:
-#       - name: prepare client
-#         run : sudo apt-get install -y openssh-client
-
-#       - name: prepare key
-#         uses: webfactory/ssh-agent@v0.7.0
-#         with:
-#           ssh-private-key: ${{ secrets.SSH_KEY }}
-
-#       - name: connect, clone and launch
-#         run : |
-#           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVEUR_IP }} 'bash -i -c "sudo docker login ${{ secrets.GIT_URL }} -u ${{ github.actor }} -p${{ secrets.GIT_TOKEN }} && sudo docker stop test_cypress && sudo docker rm test_cypress && sudo docker run -d --name "test_cypress" -p 1234:3000 ghcr.io/docker/nexttest:${{ github.run_number }}"'
-
 name: Build and Push Docker Image
 on:
   push:
@@ -43,39 +5,39 @@ on:
       - main
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    permissions:
-        contents: read
-        packages: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+  # build:
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #       contents: read
+  #       packages: write
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v2
 
-      - name: Log in to container registry
-        uses: docker/login-action@v1
-        with:
-          registry: https://ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: Log in to container registry
+  #       uses: docker/login-action@v1
+  #       with:
+  #         registry: https://ghcr.io
+  #         username: ${{ github.actor }}
+  #         password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: set lower case owner name
-        run: |
-            echo "OWNER_LC=${OWNER,,}" >>${GITHUB_ENV}
-        env:
-            OWNER: '${{ github.repository_owner }}'
+  #     - name: set lower case owner name
+  #       run: |
+  #           echo "OWNER_LC=${OWNER,,}" >>${GITHUB_ENV}
+  #       env:
+  #           OWNER: '${{ github.repository_owner }}'
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: ghcr.io/${{env.OWNER_LC}}/nexttest:latest
+  #     - name: Build and push Docker image
+  #       uses: docker/build-push-action@v2
+  #       with:
+  #         context: .
+  #         file: ./Dockerfile
+  #         push: true
+  #         tags: ghcr.io/${{env.OWNER_LC}}/nexttest:latest
 
   deploy:
     runs-on: ubuntu-latest
-    needs: [build]
+    #needs: [build]
     steps:
        - name: Checkout repository
          uses: actions/checkout@v2
@@ -96,4 +58,4 @@ jobs:
        - name: connect, clone and launch
          run : |
            scp -o StrictHostKeyChecking=no ./docker-compose.yaml ubuntu@${{ secrets.SERVEUR_IP }}:~/docker-compose.yaml
-           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVEUR_IP }} 'bash -i -c "sudo docker login ${{ secrets.GIT_URL }} -u ${{ github.actor }} -p${{ secrets.GITHUB_TOKEN }} && sudo docker-compose up -d --pull always --quiet-pull"'
+           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVEUR_IP }} 'bash -i -c "sudo docker login ${{ secrets.GIT_URL }} -u ${{ github.actor }} -p${{ secrets.GITHUB_TOKEN }} && sudo docker-compose up -d --pull always --force-recreate"'
