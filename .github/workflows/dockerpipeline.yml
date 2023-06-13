@@ -32,8 +32,8 @@ jobs:
       - name: Publish Build to JFrog
         run: |
             docker login ${{ secrets.JF_URL }} -u${{ secrets.JF_LOGIN }} -p${{ secrets.JF_ACCESS_TOKEN }}
-            docker push ${{ secrets.JF_URL }}/docker/nexttest:${{ github.run_number }}
+            docker push nexttest:${{ github.run_number }}
       - name: Publish Build to Github
         run: |
             docker login ${{ secrets.GIT_URL }} -u${{ secrets.GIT_LOGIN }} -p${{ secrets.GIT_TOKEN }} 
-            docker push ${{ secrets.GIT_URL }}/docker/nexttest:${{ github.run_number }}
+            docker push nexttest:${{ github.run_number }}
