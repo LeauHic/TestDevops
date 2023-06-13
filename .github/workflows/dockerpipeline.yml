@@ -77,6 +77,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build]
     steps:
+       - name: Checkout repository
+         uses: actions/checkout@v2
+
        - name: set lower case owner name
          run: |
              echo "OWNER_LC=${OWNER,,}" >>${GITHUB_ENV}
@@ -92,4 +95,5 @@ jobs:
            ssh-private-key: ${{ secrets.SSH_KEY }}   
        - name: connect, clone and launch
          run : |
+           scp -o StrictHostKeyChecking=no ./Dockerfile ubuntu@${{ secrets.SERVEUR_IP }}:~/Dockerfile
            ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVEUR_IP }} 'bash -i -c "sudo docker login ${{ secrets.GIT_URL }} -u ${{ github.actor }} -p${{ secrets.GITHUB_TOKEN }} && sudo docker-compose up -d"'
