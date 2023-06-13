@@ -7,18 +7,14 @@ RUN apk update && apk add --no-cache build-base gcc autoconf automake zlib-dev l
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
 
-WORKDIR /opt/
+WORKDIR /opt/app
 
-COPY ./package.json ./package-lock.json ./
+COPY ./ .
 
 # Ajout de npm a bash
 ENV PATH /opt/node_modules/.bin:$PATH
 
 RUN npm install
-
-WORKDIR /opt/app
-
-COPY ./ .
 
 RUN npm run build
 
