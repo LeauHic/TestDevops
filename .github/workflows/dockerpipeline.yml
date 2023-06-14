@@ -74,7 +74,7 @@ jobs:
     environment: 
       name: production
       url: http://ec2-44-211-164-66.compute-1.amazonaws.com:3000/
-    if: ${{ github.job.environment }} == 'production'
+    if: ${{ github.ref_name == 'main' }}
     permissions:
         contents: read
         packages: write
@@ -109,7 +109,7 @@ jobs:
     environment: 
       name: development
       url: http://ec2-44-211-164-66.compute-1.amazonaws.com:2000/
-    if: ${{github.job.environment}} == 'development'
+    if: ${{ github.ref_name == 'development' }}
     permissions:
         contents: read
         packages: write
