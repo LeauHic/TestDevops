@@ -14,7 +14,7 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Bienvenue Watchtower
+          Bienvenue Email moi !!
         </h1>
 
         <p className={styles.description}>
