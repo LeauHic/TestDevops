@@ -19,6 +19,9 @@ RUN npm run build
 
 COPY docker/next/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
 
+# Exécutez la commande chmod pour rendre le fichier exécutable
+RUN chmod +x /usr/local/bin/docker-entrypoint
+
 EXPOSE 3000
 ENTRYPOINT [ "docker-entrypoint" ]
 CMD ["npm", "run", "start"]
