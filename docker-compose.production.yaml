@@ -15,3 +15,4 @@ services:
 # Section définissant les différents réseaux
 networks:
   test_cypress_network : {}
+  
